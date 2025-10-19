@@ -1,6 +1,10 @@
-# NWT Bike Finder
+# YK Bike Finder
 
-A Progressive Web App (PWA) for helping recover stolen bikes across the Northwest Territories. Built with Next.js, Firebase, and TensorFlow.js for intelligent image matching.
+A Progressive Web App (PWA) for helping recover stolen bikes in Yellowknife. Built with Next.js, Firebase, and TensorFlow.js for intelligent image matching.
+
+## 🚀 Soft Launch: Yellowknife Area Only
+
+Currently serving the Yellowknife area (Yellowknife, Dettah, N'Dilo) with plans to expand across the Northwest Territories.
 
 ## Features
 
@@ -8,7 +12,7 @@ A Progressive Web App (PWA) for helping recover stolen bikes across the Northwes
 - 🔍 **Report Found Bikes**: Report bikes you've found in your community
 - 🤖 **AI-Powered Matching**: TensorFlow.js analyzes photos to find potential matches
 - 💬 **Real-time Chat**: Connect with bike owners/finders through secure messaging
-- 🗺️ **Interactive Map**: View found bikes across all NWT communities
+- 🗺️ **Interactive Map**: View found bikes in the Yellowknife area
 - 📱 **Mobile-First PWA**: Works offline and installs like a native app
 - 🎨 **NWT Theme**: Beautiful design inspired by the Northwest Territories
 
