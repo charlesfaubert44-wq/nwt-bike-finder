@@ -1,36 +1,135 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NWT Bike Finder
+
+A Progressive Web App (PWA) for helping recover stolen bikes across the Northwest Territories. Built with Next.js, Firebase, and TensorFlow.js for intelligent image matching.
+
+## Features
+
+- 🚲 **Report Stolen Bikes**: Upload photos and details of stolen bikes
+- 🔍 **Report Found Bikes**: Report bikes you've found in your community
+- 🤖 **AI-Powered Matching**: TensorFlow.js analyzes photos to find potential matches
+- 💬 **Real-time Chat**: Connect with bike owners/finders through secure messaging
+- 🗺️ **Interactive Map**: View found bikes across all NWT communities
+- 📱 **Mobile-First PWA**: Works offline and installs like a native app
+- 🎨 **NWT Theme**: Beautiful design inspired by the Northwest Territories
+
+## Technology Stack
+
+- **Frontend**: Next.js 14 with TypeScript
+- **Styling**: Tailwind CSS with custom NWT color palette
+- **Backend**: Firebase (Auth, Firestore, Storage, Realtime Database)
+- **AI**: TensorFlow.js for image feature extraction and matching
+- **Maps**: Leaflet with OpenStreetMap
+- **PWA**: next-pwa for offline support and app-like experience
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- npm or yarn
+- Firebase project with Authentication, Firestore, Storage, and Realtime Database enabled
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd nwt-bike-finder
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+```bash
+cp .env.local.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Edit `.env.local` with your Firebase configuration:
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
+```
 
-## Learn More
+4. Run the development server:
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Firebase Setup
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Create a new Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
+2. Enable the following services:
+   - Authentication (Email/Password and Google)
+   - Firestore Database
+   - Storage
+   - Realtime Database
+3. Set up security rules for Firestore and Storage
+4. Add your domain to authorized domains in Authentication settings
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Vercel (Recommended)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add environment variables in Vercel dashboard
+4. Deploy!
+
+### Manual Deployment
+
+```bash
+npm run build
+npm start
+```
+
+## Project Structure
+
+```
+src/
+├── app/                    # Next.js app router pages
+│   ├── auth/              # Authentication pages
+│   ├── report/            # Bike reporting forms
+│   ├── bikes/             # Bike detail pages
+│   ├── map/               # Map view
+│   └── matches/           # Match management
+├── components/            # React components
+│   ├── ui/               # Reusable UI components
+│   └── ...               # Feature components
+├── hooks/                # Custom React hooks
+├── lib/                  # Utility functions and Firebase config
+└── types/                # TypeScript type definitions
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For support, email support@nwtbikefinder.ca or create an issue in this repository.
+
+## Acknowledgments
+
+- Northwest Territories cycling community
+- OpenStreetMap contributors
+- Firebase team
+- Next.js team
+- TensorFlow.js team
