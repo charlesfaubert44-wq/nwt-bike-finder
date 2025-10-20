@@ -86,13 +86,24 @@ export default function ReportStolenPage() {
     setLoading(true);
 
     try {
+      // Generate a temporary ID for image uploads
+      const tempId = `temp_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+
       // Upload images to Firebase Storage
-      const imageUrls = await uploadImages(formData.photos, 'temp-id', 'stolen');
-      
+      const imageUrls = await uploadImages(formData.photos, tempId, 'stolen', user.uid);
+
       // Extract features from images for matching
       const imageFeatures = await Promise.all(
         formData.photos.map(file => extractFeaturesFromFile(file))
       );
+
+      // Flatten all features into a single array (average pooling)
+      const allFeatures = imageFeatures.flat();
+      const averagedFeatures = allFeatures.length > 0
+        ? Array.from({ length: imageFeatures[0].length }, (_, i) =>
+            imageFeatures.reduce((sum, features) => sum + features[i], 0) / imageFeatures.length
+          )
+        : [];
 
       // Create bike document
       const bikeId = await createStolenBike({
@@ -108,7 +119,7 @@ export default function ReportStolenPage() {
         dateStolen: formData.dateStolen,
         contactPreference: formData.contactPreference,
         status: 'active',
-        imageFeatures: imageFeatures[0] // Use first image's features for now
+        imageFeatures: averagedFeatures
       });
 
       router.push(`/bikes/stolen/${bikeId}?success=true`);

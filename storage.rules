@@ -4,8 +4,8 @@ service firebase.storage {
     // Bike images - users can upload and read their own images
     match /bikes/{type}/{bikeId}/{allPaths=**} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null && 
-        request.auth.uid == resource.metadata.userId;
+      allow write: if request.auth != null &&
+        request.auth.uid == request.resource.metadata.userId;
     }
     
     // Profile images - users can upload and read their own

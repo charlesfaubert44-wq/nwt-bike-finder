@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { getReports, updateReport } from '@/lib/db';
+import { getReports, updateReport, isUserAdmin } from '@/lib/db';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Report } from '@/types';
@@ -14,6 +14,20 @@ export default function AdminPage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminCheckLoading, setAdminCheckLoading] = useState(true);
+
+  // Check if user has admin role
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (user) {
+        const adminStatus = await isUserAdmin(user.uid);
+        setIsAdmin(adminStatus);
+      }
+      setAdminCheckLoading(false);
+    };
+    checkAdminStatus();
+  }, [user]);
 
   const fetchReports = async () => {
     try {
@@ -28,8 +42,12 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    fetchReports();
-  }, []);
+    if (isAdmin) {
+      fetchReports();
+    } else {
+      setLoading(false);
+    }
+  }, [isAdmin]);
 
   const handleReviewReport = async (reportId: string, action: 'approve' | 'dismiss') => {
     try {
@@ -42,9 +60,6 @@ export default function AdminPage() {
       console.error('Error updating report:', err);
     }
   };
-
-  // Simple admin check - in production, you'd have proper role-based access
-  const isAdmin = user?.email?.includes('admin') || user?.email?.includes('moderator');
 
   if (!user) {
     return (
@@ -64,31 +79,33 @@ export default function AdminPage() {
     );
   }
 
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 flex items-center justify-center">
-        <Card className="max-w-md w-full">
-          <CardHeader className="text-center">
-            <CardTitle className="text-danger">Access Denied</CardTitle>
-            <CardDescription>You don't have permission to access the admin panel</CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Button onClick={() => window.location.href = '/'}>
-              Back to Home
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (loading) {
+  if (adminCheckLoading || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 flex items-center justify-center">
         <Card className="max-w-md w-full">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <RefreshCw className="h-8 w-8 text-primary animate-spin mb-4" />
             <p className="text-slate-gray">Loading admin panel...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 flex items-center justify-center">
+        <Card className="max-w-md w-full">
+          <CardHeader className="text-center">
+            <CardTitle className="text-danger">Access Denied</CardTitle>
+            <CardDescription>
+              You don't have permission to access the admin panel. Only users with admin or moderator roles can access this page.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center">
+            <Button onClick={() => window.location.href = '/'}>
+              Back to Home
+            </Button>
           </CardContent>
         </Card>
       </div>

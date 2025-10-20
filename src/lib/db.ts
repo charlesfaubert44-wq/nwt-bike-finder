@@ -204,7 +204,7 @@ export const updateReport = async (id: string, updates: Partial<Report>) => {
 export const getUser = async (uid: string) => {
   const docRef = doc(db, 'users', uid);
   const docSnap = await getDoc(docRef);
-  
+
   if (docSnap.exists()) {
     return {
       uid: docSnap.id,
@@ -218,4 +218,9 @@ export const getUser = async (uid: string) => {
 export const updateUser = async (uid: string, updates: Partial<User>) => {
   const docRef = doc(db, 'users', uid);
   await updateDoc(docRef, updates);
+};
+
+export const isUserAdmin = async (uid: string): Promise<boolean> => {
+  const user = await getUser(uid);
+  return user?.role === 'admin' || user?.role === 'moderator';
 };

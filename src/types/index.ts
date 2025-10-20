@@ -4,6 +4,7 @@ export interface User {
   displayName: string;
   photoURL?: string;
   phone?: string;
+  role?: 'user' | 'admin' | 'moderator';
   createdAt: string;
 }
 

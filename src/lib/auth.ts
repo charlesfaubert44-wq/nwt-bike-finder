@@ -25,6 +25,7 @@ export const signInWithGoogle = async () => {
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL,
+        role: 'user',
         createdAt: new Date().toISOString(),
       });
     }
@@ -57,6 +58,7 @@ export const signUpWithEmail = async (email: string, password: string, displayNa
       email: user.email,
       displayName,
       photoURL: user.photoURL,
+      role: 'user',
       createdAt: new Date().toISOString(),
     });
     
