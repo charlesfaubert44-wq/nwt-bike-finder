@@ -7,9 +7,10 @@ import { getStolenBike } from '@/lib/db';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { StolenBike } from '@/types';
-import { Bike, MapPin, Calendar, User, ArrowLeft, Shield, MessageCircle } from 'lucide-react';
+import { Bike, MapPin, Calendar, User, ArrowLeft, Shield, MessageCircle, Flag } from 'lucide-react';
 import Link from 'next/link';
 import { formatDate, getTimeAgo } from '@/lib/utils';
+import { ReportDialog } from '@/components/ReportDialog';
 
 export default function StolenBikeDetailPage() {
   const { id } = useParams();
@@ -17,6 +18,7 @@ export default function StolenBikeDetailPage() {
   const [bike, setBike] = useState<StolenBike | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showReportDialog, setShowReportDialog] = useState(false);
 
   useEffect(() => {
     const fetchBike = async () => {
@@ -84,10 +86,24 @@ export default function StolenBikeDetailPage() {
             <ArrowLeft className="h-4 w-4 mr-1" />
             Back to home
           </Link>
-          <h1 className="text-3xl font-bold text-slate-gray">Stolen Bike Details</h1>
-          <p className="text-slate-gray/80 mt-2">
-            {isOwner ? 'Your reported stolen bike' : 'Reported stolen bike details'}
-          </p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-gray">Stolen Bike Details</h1>
+              <p className="text-slate-gray/80 mt-2">
+                {isOwner ? 'Your reported stolen bike' : 'Reported stolen bike details'}
+              </p>
+            </div>
+            {!isOwner && user && (
+              <Button
+                variant="outline"
+                onClick={() => setShowReportDialog(true)}
+                className="text-danger border-danger hover:bg-danger hover:text-white"
+              >
+                <Flag className="h-4 w-4 mr-2" />
+                Report
+              </Button>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -249,6 +265,13 @@ export default function StolenBikeDetailPage() {
             )}
           </div>
         </div>
+
+        <ReportDialog
+          itemId={bike.id}
+          itemType="stolen"
+          isOpen={showReportDialog}
+          onClose={() => setShowReportDialog(false)}
+        />
       </div>
     </div>
   );

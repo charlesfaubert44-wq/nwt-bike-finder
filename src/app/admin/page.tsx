@@ -2,44 +2,94 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { getReports, updateReport } from '@/lib/db';
+import { getReports, updateReport, getStolenBikes, getFoundBikes, deleteStolenBike, deleteFoundBike, updateStolenBike, updateFoundBike } from '@/lib/db';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Report } from '@/types';
-import { Shield, AlertTriangle, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
-import { formatDateTime } from '@/lib/utils';
+import { Report, StolenBike, FoundBike } from '@/types';
+import { Shield, AlertTriangle, CheckCircle, XCircle, RefreshCw, Users, Bike, Trash2, Eye } from 'lucide-react';
+import { formatDateTime, formatDate } from '@/lib/utils';
+import Link from 'next/link';
 
 export default function AdminPage() {
   const { user } = useAuth();
   const [reports, setReports] = useState<Report[]>([]);
+  const [stolenBikes, setStolenBikes] = useState<StolenBike[]>([]);
+  const [foundBikes, setFoundBikes] = useState<FoundBike[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState<'reports' | 'stolen' | 'found'>('reports');
 
-  const fetchReports = async () => {
+  const fetchData = async () => {
+    setLoading(true);
     try {
-      const reportsData = await getReports();
+      const [reportsData, stolenData, foundData] = await Promise.all([
+        getReports(),
+        getStolenBikes(),
+        getFoundBikes()
+      ]);
       setReports(reportsData);
+      setStolenBikes(stolenData);
+      setFoundBikes(foundData);
+      setError('');
     } catch (err) {
-      console.error('Error fetching reports:', err);
-      setError('Failed to load reports');
+      console.error('Error fetching data:', err);
+      setError('Failed to load data');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchReports();
+    fetchData();
   }, []);
 
   const handleReviewReport = async (reportId: string, action: 'approve' | 'dismiss') => {
     try {
       await updateReport(reportId, {
         status: 'reviewed',
-        resolution: action === 'approve' ? 'approved' : 'dismissed'
+        resolution: action === 'approve' ? 'approved' : 'dismissed',
+        reviewedAt: new Date().toISOString(),
+        reviewedBy: user?.uid
       });
-      await fetchReports(); // Refresh the list
+      await fetchData();
     } catch (err) {
       console.error('Error updating report:', err);
+    }
+  };
+
+  const handleRemoveBike = async (bikeId: string, type: 'stolen' | 'found') => {
+    if (!confirm(`Are you sure you want to remove this ${type} bike? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      if (type === 'stolen') {
+        await updateStolenBike(bikeId, { status: 'removed' });
+      } else {
+        await updateFoundBike(bikeId, { status: 'removed' });
+      }
+      await fetchData();
+    } catch (err) {
+      console.error('Error removing bike:', err);
+      alert('Failed to remove bike');
+    }
+  };
+
+  const handleDeleteBike = async (bikeId: string, type: 'stolen' | 'found') => {
+    if (!confirm(`Are you sure you want to permanently delete this ${type} bike? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      if (type === 'stolen') {
+        await deleteStolenBike(bikeId);
+      } else {
+        await deleteFoundBike(bikeId);
+      }
+      await fetchData();
+    } catch (err) {
+      console.error('Error deleting bike:', err);
+      alert('Failed to delete bike');
     }
   };
 
@@ -113,7 +163,7 @@ export default function AdminPage() {
           </Card>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center space-x-2">
@@ -131,12 +181,12 @@ export default function AdminPage() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center space-x-2">
-                <CheckCircle className="h-8 w-8 text-success" />
+                <Shield className="h-8 w-8 text-danger" />
                 <div>
-                  <p className="text-2xl font-bold text-success">
-                    {reports.filter(r => r.status === 'reviewed').length}
+                  <p className="text-2xl font-bold text-slate-gray">
+                    {stolenBikes.filter(b => b.status === 'active').length}
                   </p>
-                  <p className="text-sm text-slate-gray">Reviewed Reports</p>
+                  <p className="text-sm text-slate-gray">Active Stolen</p>
                 </div>
               </div>
             </CardContent>
@@ -145,32 +195,73 @@ export default function AdminPage() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center space-x-2">
-                <Shield className="h-8 w-8 text-primary" />
+                <CheckCircle className="h-8 w-8 text-success" />
                 <div>
                   <p className="text-2xl font-bold text-slate-gray">
-                    {reports.length}
+                    {foundBikes.filter(b => b.status === 'active').length}
                   </p>
-                  <p className="text-sm text-slate-gray">Total Reports</p>
+                  <p className="text-sm text-slate-gray">Active Found</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-2">
+                <Bike className="h-8 w-8 text-primary" />
+                <div>
+                  <p className="text-2xl font-bold text-slate-gray">
+                    {stolenBikes.length + foundBikes.length}
+                  </p>
+                  <p className="text-sm text-slate-gray">Total Bikes</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Content Reports</span>
-              <Button variant="outline" size="sm" onClick={fetchReports}>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
-              </Button>
-            </CardTitle>
-            <CardDescription>
-              Review and moderate reported content
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        {/* Tabs */}
+        <div className="mb-6 flex space-x-2">
+          <Button
+            variant={activeTab === 'reports' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('reports')}
+          >
+            <AlertTriangle className="h-4 w-4 mr-2" />
+            Reports ({reports.filter(r => r.status === 'pending').length})
+          </Button>
+          <Button
+            variant={activeTab === 'stolen' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('stolen')}
+          >
+            <Shield className="h-4 w-4 mr-2" />
+            Stolen Bikes ({stolenBikes.length})
+          </Button>
+          <Button
+            variant={activeTab === 'found' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('found')}
+          >
+            <CheckCircle className="h-4 w-4 mr-2" />
+            Found Bikes ({foundBikes.length})
+          </Button>
+        </div>
+
+        {/* Reports Tab */}
+        {activeTab === 'reports' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Content Reports</span>
+                <Button variant="outline" size="sm" onClick={fetchData}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </Button>
+              </CardTitle>
+              <CardDescription>
+                Review and moderate reported content
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
             {reports.length === 0 ? (
               <div className="text-center py-12">
                 <Shield className="h-12 w-12 text-slate-gray/50 mx-auto mb-4" />
@@ -237,8 +328,195 @@ export default function AdminPage() {
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Stolen Bikes Tab */}
+        {activeTab === 'stolen' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Stolen Bikes</span>
+                <Button variant="outline" size="sm" onClick={fetchData}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </Button>
+              </CardTitle>
+              <CardDescription>
+                Manage stolen bike reports
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {stolenBikes.length === 0 ? (
+                <div className="text-center py-12">
+                  <Shield className="h-12 w-12 text-slate-gray/50 mx-auto mb-4" />
+                  <p className="text-slate-gray/60">No stolen bikes reported</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {stolenBikes.map((bike) => (
+                    <Card key={bike.id} className="border-l-4 border-l-danger">
+                      <CardContent className="pt-6">
+                        <div className="flex gap-4">
+                          <div className="w-24 h-24 flex-shrink-0">
+                            <img
+                              src={bike.photos[0]}
+                              alt={`${bike.brand} ${bike.model}`}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <h3 className="text-lg font-bold text-slate-gray">
+                                  {bike.brand} {bike.model}
+                                </h3>
+                                <p className="text-sm text-slate-gray/60">
+                                  {bike.type} • {bike.color} • {bike.location.city}
+                                </p>
+                              </div>
+                              <span className={`px-2 py-1 rounded-full text-xs ${
+                                bike.status === 'active'
+                                  ? 'bg-danger/20 text-danger'
+                                  : bike.status === 'resolved'
+                                  ? 'bg-success/20 text-success'
+                                  : 'bg-slate-gray/20 text-slate-gray'
+                              }`}>
+                                {bike.status}
+                              </span>
+                            </div>
+                            <p className="text-sm text-slate-gray mb-3">
+                              Stolen {formatDate(bike.dateStolen)} • Reported {formatDateTime(bike.createdAt)}
+                            </p>
+                            <div className="flex space-x-2">
+                              <Link href={`/bikes/stolen/${bike.id}`}>
+                                <Button size="sm" variant="outline">
+                                  <Eye className="h-4 w-4 mr-1" />
+                                  View
+                                </Button>
+                              </Link>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleRemoveBike(bike.id, 'stolen')}
+                                className="text-accent border-accent hover:bg-accent hover:text-white"
+                              >
+                                Hide
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleDeleteBike(bike.id, 'stolen')}
+                                className="text-danger border-danger hover:bg-danger hover:text-white"
+                              >
+                                <Trash2 className="h-4 w-4 mr-1" />
+                                Delete
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Found Bikes Tab */}
+        {activeTab === 'found' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Found Bikes</span>
+                <Button variant="outline" size="sm" onClick={fetchData}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </Button>
+              </CardTitle>
+              <CardDescription>
+                Manage found bike reports
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {foundBikes.length === 0 ? (
+                <div className="text-center py-12">
+                  <CheckCircle className="h-12 w-12 text-slate-gray/50 mx-auto mb-4" />
+                  <p className="text-slate-gray/60">No found bikes reported</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {foundBikes.map((bike) => (
+                    <Card key={bike.id} className="border-l-4 border-l-success">
+                      <CardContent className="pt-6">
+                        <div className="flex gap-4">
+                          <div className="w-24 h-24 flex-shrink-0">
+                            <img
+                              src={bike.photos[0]}
+                              alt="Found bike"
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <h3 className="text-lg font-bold text-slate-gray">
+                                  Found Bike
+                                </h3>
+                                <p className="text-sm text-slate-gray/60">
+                                  {bike.type} • {bike.color} • {bike.condition} • {bike.location.city}
+                                </p>
+                              </div>
+                              <span className={`px-2 py-1 rounded-full text-xs ${
+                                bike.status === 'active'
+                                  ? 'bg-success/20 text-success'
+                                  : bike.status === 'resolved'
+                                  ? 'bg-primary/20 text-primary'
+                                  : 'bg-slate-gray/20 text-slate-gray'
+                              }`}>
+                                {bike.status}
+                              </span>
+                            </div>
+                            <p className="text-sm text-slate-gray mb-3">
+                              Found {formatDate(bike.dateFound)} • Reported {formatDateTime(bike.createdAt)}
+                            </p>
+                            <div className="flex space-x-2">
+                              <Link href={`/bikes/found/${bike.id}`}>
+                                <Button size="sm" variant="outline">
+                                  <Eye className="h-4 w-4 mr-1" />
+                                  View
+                                </Button>
+                              </Link>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleRemoveBike(bike.id, 'found')}
+                                className="text-accent border-accent hover:bg-accent hover:text-white"
+                              >
+                                Hide
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleDeleteBike(bike.id, 'found')}
+                                className="text-danger border-danger hover:bg-danger hover:text-white"
+                              >
+                                <Trash2 className="h-4 w-4 mr-1" />
+                                Delete
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
