@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue, push, off, serverTimestamp } from 'firebase/database';
 import { realtimeDb } from '@/lib/firebase';
+import { uploadImage } from '@/lib/storage';
 import { ChatMessage } from '@/types';
 
 export function useChat(roomId: string) {
@@ -60,10 +61,36 @@ export function useChat(roomId: string) {
     }
   };
 
+  const sendImage = async (image: File, senderId: string, senderName: string) => {
+    if (!roomId || !image) return;
+
+    try {
+      // Upload image to Firebase Storage
+      const imagePath = `chats/${roomId}/${Date.now()}_${image.name}`;
+      const imageUrl = await uploadImage(image, imagePath);
+
+      // Send message with image URL
+      const messagesRef = ref(realtimeDb, `chats/${roomId}/messages`);
+      await push(messagesRef, {
+        message: 'Image',
+        senderId,
+        senderName,
+        timestamp: serverTimestamp(),
+        type: 'image',
+        imageUrl
+      });
+    } catch (error) {
+      console.error('Error sending image:', error);
+      setError('Failed to send image');
+      throw error;
+    }
+  };
+
   return {
     messages,
     loading,
     error,
-    sendMessage
+    sendMessage,
+    sendImage
   };
 }

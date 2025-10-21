@@ -46,9 +46,9 @@ export function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <div className="flex items-center space-x-4">
-                <Link href="/bikes/my-bikes" className="flex items-center space-x-1 text-slate-gray hover:text-primary transition-colors">
+                <Link href="/profile" className="flex items-center space-x-1 text-slate-gray hover:text-primary transition-colors">
                   <User className="h-4 w-4" />
-                  <span>My Bikes</span>
+                  <span>Profile</span>
                 </Link>
                 <Button variant="outline" onClick={logout}>
                   Sign Out
@@ -115,12 +115,12 @@ export function Navbar() {
                     <span>Matches</span>
                   </Link>
                   <Link
-                    href="/bikes/my-bikes"
+                    href="/profile"
                     className="flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium text-slate-gray hover:text-primary hover:bg-frost-gray"
                     onClick={() => setIsOpen(false)}
                   >
                     <User className="h-4 w-4" />
-                    <span>My Bikes</span>
+                    <span>Profile</span>
                   </Link>
                 </>
               )}

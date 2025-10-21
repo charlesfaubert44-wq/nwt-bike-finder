@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { sanitizeEmail, sanitizePhone, sanitizeText } from './sanitize';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -85,13 +86,15 @@ export function getCommunityFromCoordinates(lat: number, lng: number): string {
 }
 
 export function validateEmail(email: string): boolean {
+  const sanitized = sanitizeEmail(email);
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  return emailRegex.test(sanitized);
 }
 
 export function validatePhone(phone: string): boolean {
+  const sanitized = sanitizePhone(phone);
   const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-  return phoneRegex.test(phone.replace(/\s/g, ''));
+  return phoneRegex.test(sanitized.replace(/\s/g, ''));
 }
 
 export function generateId(): string {

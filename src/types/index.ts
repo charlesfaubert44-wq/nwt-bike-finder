@@ -71,6 +71,9 @@ export interface Report {
   reporterId: string;
   reason: string;
   status: 'pending' | 'reviewed';
+  resolution?: 'approved' | 'dismissed';
+  reviewedAt?: string;
+  reviewedBy?: string;
   createdAt: string;
 }
 
