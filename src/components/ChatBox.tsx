@@ -156,3 +156,4 @@ export function ChatBox({ roomId, className }: ChatBoxProps) {
     </Card>
   );
 }
+

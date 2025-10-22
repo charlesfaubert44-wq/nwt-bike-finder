@@ -1,0 +1,40 @@
+mutation CreateUser($username: String!, $email: String!, $createdAt: Timestamp!) @auth(level: USER) {
+  user_insert(data: {username: $username, email: $email, createdAt: $createdAt, id_expr: "uuidV4()"})
+}
+
+query GetPublicRides @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  rides(where: {isPublic: {eq: true}}) {
+    id
+    name
+    distanceInKm
+  }
+}
+
+mutation LogMaintenance(
+  $componentId: UUID!
+  $cost: Float
+  $description: String!
+  $maintenanceDate: Timestamp!
+  $notes: String
+) @auth(level: USER) {
+  maintenanceLog_insert(
+    data: {
+      componentId: $componentId
+      cost: $cost
+      description: $description
+      maintenanceDate: $maintenanceDate
+      notes: $notes
+      createdAt_expr: "request.time"
+    }
+  )
+}
+
+query GetMyBikes @auth(level: USER) {
+  bikes(where: {userId: {eq_expr: "auth.uid"}}) {
+    id
+    name
+    brand
+    model
+    year
+  }
+}

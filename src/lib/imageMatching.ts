@@ -104,3 +104,4 @@ export const extractFeaturesFromFile = async (file: File): Promise<number[]> => 
   const imageElement = await preprocessImage(file);
   return await extractFeatures(imageElement);
 };
+

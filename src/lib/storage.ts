@@ -25,3 +25,4 @@ export const deleteBikeImages = async (urls: string[]): Promise<void> => {
   const deletePromises = urls.map(url => deleteImage(url));
   await Promise.all(deletePromises);
 };
+

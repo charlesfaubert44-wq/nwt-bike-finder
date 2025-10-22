@@ -179,3 +179,4 @@ To expand beyond Yellowknife:
 - Upgrade Firebase plan as needed
 - Consider CDN for images
 - Implement caching strategies
+

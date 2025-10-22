@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { User as FirebaseUser } from 'firebase/auth';
 import { onAuthStateChange, signInWithEmail, signUpWithEmail, signInWithGoogle, logout } from '@/lib/auth';
 
@@ -79,3 +79,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     </AuthContext.Provider>
   );
 }
+

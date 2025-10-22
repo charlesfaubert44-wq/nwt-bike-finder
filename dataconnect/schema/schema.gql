@@ -1,0 +1,56 @@
+type User @table {
+  username: String!
+  createdAt: Timestamp!
+  email: String
+  profilePictureUrl: String
+  bio: String
+}
+
+type Bike @table {
+  user: User!
+  name: String!
+  type: String!
+  createdAt: Timestamp!
+  imageUrl: String
+  brand: String
+  model: String
+  year: Int
+}
+
+type Ride @table {
+  user: User!
+  bike: Bike!
+  startTime: Timestamp!
+  durationInMinutes: Int!
+  distanceInKm: Float!
+  isPublic: Boolean!
+  createdAt: Timestamp!
+  routeDescription: String
+  startLocation: String
+  endLocation: String
+  elevationGain: Float
+  averageSpeed: Float
+}
+
+type Component @table {
+  bike: Bike!
+  name: String!
+  type: String!
+  createdAt: Timestamp!
+  lastServicedAt: Timestamp
+  recommendedServiceIntervalInKm: Int
+}
+
+type MaintenanceLog @table {
+  component: Component!
+  maintenanceDate: Timestamp!
+  description: String!
+  createdAt: Timestamp!
+  cost: Float
+  notes: String
+}
+
+type Follow @table(key: ["follower", "followed"]) {
+  follower: User!
+  followed: User!
+}

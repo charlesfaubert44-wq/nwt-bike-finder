@@ -78,3 +78,4 @@ export const logout = async () => {
 export const onAuthStateChange = (callback: (user: User | null) => void) => {
   return onAuthStateChanged(auth, callback);
 };
+

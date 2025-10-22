@@ -219,3 +219,4 @@ export const updateUser = async (uid: string, updates: Partial<User>) => {
   const docRef = doc(db, 'users', uid);
   await updateDoc(docRef, updates);
 };
+
