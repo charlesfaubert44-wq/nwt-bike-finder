@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     optimizePackageImports: ['@tensorflow/tfjs']
+  },
+  turbopack: {
+    root: process.cwd(),
   }
 };
 
