@@ -9,10 +9,37 @@
     @apply border-border;
   }
 
+  :root {
+    --season-primary: #0ea5e9;
+    --season-secondary: #22c55e;
+    --season-accent: #fbbf24;
+    --season-background: #0f172a;
+    --season-text: #ffffff;
+  }
+
   body {
-    @apply bg-gradient-to-b from-yk-dark-900 via-yk-dark-800 to-yk-dark-900 text-white;
+    @apply text-white;
     font-family: 'Inter', system-ui, sans-serif;
     min-height: 100vh;
+    background: linear-gradient(to bottom, var(--season-background), #0f172a);
+    transition: background 1s ease-in-out;
+  }
+
+  /* Seasonal Body Backgrounds */
+  body.season-winter {
+    background: linear-gradient(to bottom, #0c1929, #0f172a, #1e293b);
+  }
+
+  body.season-spring {
+    background: linear-gradient(to bottom, #1e293b, #0f172a, #1c2a1f);
+  }
+
+  body.season-summer {
+    background: linear-gradient(to bottom, #1e3a2f, #1c2a1f, #14532d);
+  }
+
+  body.season-fall {
+    background: linear-gradient(to bottom, #1c1917, #0f172a, #292524);
   }
 
   html {
@@ -91,6 +118,48 @@
     );
     animation: aurora 20s ease-in-out infinite;
     pointer-events: none;
+    transition: opacity 1s ease-in-out;
+  }
+
+  /* Seasonal Aurora Effects */
+  .season-winter .aurora-bg::before {
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(56, 189, 248, 0.2) 0%,
+      rgba(129, 140, 248, 0.15) 25%,
+      rgba(192, 132, 252, 0.1) 50%,
+      transparent 70%
+    );
+  }
+
+  .season-spring .aurora-bg::before {
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(96, 165, 250, 0.15) 0%,
+      rgba(52, 211, 153, 0.12) 25%,
+      rgba(251, 191, 36, 0.08) 50%,
+      transparent 70%
+    );
+  }
+
+  .season-summer .aurora-bg::before {
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(251, 191, 36, 0.2) 0%,
+      rgba(34, 197, 94, 0.15) 25%,
+      rgba(249, 115, 22, 0.1) 50%,
+      transparent 70%
+    );
+  }
+
+  .season-fall .aurora-bg::before {
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(245, 158, 11, 0.18) 0%,
+      rgba(239, 68, 68, 0.12) 25%,
+      rgba(139, 92, 246, 0.08) 50%,
+      transparent 70%
+    );
   }
 
   /* Pixel Grid Background */

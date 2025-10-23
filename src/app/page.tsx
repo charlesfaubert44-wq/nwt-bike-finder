@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import {
   Home,
   Plane,
@@ -19,9 +20,17 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import LakeScene from '@/components/LakeScene';
+import SeasonalLakeScene from '@/components/SeasonalLakeScene';
+import SeasonSelector from '@/components/SeasonSelector';
+import { useSeason } from '@/hooks/useSeason';
 
 export default function HomePage() {
+  const { season, theme, changeSeason } = useSeason();
+
+  // Apply season class to body
+  useEffect(() => {
+    document.body.className = `season-${season}`;
+  }, [season]);
   const features = {
     living: [
       {
@@ -167,10 +176,13 @@ export default function HomePage() {
 
             {/* Interactive Lake Scene */}
             <div className="animate-fade-in animation-delay-200">
-              <LakeScene />
+              <SeasonalLakeScene season={season} />
               <p className="text-center text-sm text-gray-400 mt-4">
                 <Sparkles className="w-4 h-4 inline mr-1 text-yk-aurora-400" />
-                Click the lake to see a trout jump!
+                {season === 'winter' && 'Frozen lake with cozy houseboat'}
+                {season === 'spring' && 'Ice breakup season - click for trout!'}
+                {season === 'summer' && 'Click the lake to see a trout jump!'}
+                {season === 'fall' && 'Preparing for winter freeze'}
               </p>
             </div>
           </div>
@@ -352,6 +364,9 @@ export default function HomePage() {
       </section>
 
       <Footer />
+
+      {/* Season Selector */}
+      <SeasonSelector currentSeason={season} onSeasonChange={changeSeason} />
     </div>
   );
 }
