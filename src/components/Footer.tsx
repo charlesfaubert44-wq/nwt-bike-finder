@@ -1,141 +1,80 @@
 'use client';
 
-import Link from 'next/link';
-import { Bike, MapPin, Mail, Github, Twitter, Facebook } from 'lucide-react';
+import { Heart, Github, Mail, MapPin } from 'lucide-react';
 
-export function Footer() {
+export default function Footer() {
   const currentYear = new Date().getFullYear();
 
-  const footerLinks = {
-    product: [
-      { name: 'Map', href: '/map' },
-      { name: 'Report Stolen', href: '/report/stolen' },
-      { name: 'Report Found', href: '/report/found' },
-      { name: 'How It Works', href: '/#how-it-works' },
-    ],
-    company: [
-      { name: 'About Us', href: '/about' },
-      { name: 'Contact', href: '/contact' },
-      { name: 'Blog', href: '/blog' },
-      { name: 'Community', href: '/community' },
-    ],
-    legal: [
-      { name: 'Privacy Policy', href: '/privacy' },
-      { name: 'Terms of Service', href: '/terms' },
-      { name: 'Cookie Policy', href: '/cookies' },
-    ],
-  };
-
-  const socialLinks = [
-    { name: 'Twitter', icon: Twitter, href: '#' },
-    { name: 'Facebook', icon: Facebook, href: '#' },
-    { name: 'GitHub', icon: Github, href: '#' },
-  ];
-
   return (
-    <footer className="bg-gradient-to-b from-white to-gray-50 w-full py-8">
-      <div className="w-full max-w-none mx-auto px-4 lg:px-8 xl:px-16 2xl:px-24">
-        <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 lg:p-12">
-        {/* Top Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-8 border-b border-gray-200">
-          {/* Brand Section */}
-          <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center space-x-2.5 group mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary-600 to-secondary-500 shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300">
-                <Bike className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors">
-                YK Bike Finder
-              </span>
-            </Link>
-            <p className="text-sm text-gray-600 leading-relaxed mb-4 max-w-sm">
-              Community-powered bike recovery using AI. Help keep Yellowknife cycling safe and reunite bikes with their owners.
+    <footer className="bg-yk-dark-900 border-t-2 border-yk-primary-500/20 mt-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          {/* Brand */}
+          <div>
+            <h3 className="text-xl font-bold pixel-font glow-text mb-4">
+              YK<span className="text-yk-aurora-400">-</span>Companion
+            </h3>
+            <p className="text-gray-400 text-sm mb-4">
+              Your ultimate guide to Yellowknife - Canada's Northern Capital under the Aurora.
             </p>
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <MapPin className="h-4 w-4 text-primary-600" />
-              <span>Serving Yellowknife, NT</span>
+            <div className="flex items-center space-x-2 text-sm text-gray-400">
+              <MapPin className="w-4 h-4 text-yk-primary-400" />
+              <span>Yellowknife, Northwest Territories</span>
             </div>
           </div>
 
-          {/* Product Links */}
+          {/* Quick Links */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-              Product
-            </h3>
-            <ul className="space-y-3">
-              {footerLinks.product.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
+            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+            <ul className="space-y-2">
+              <li>
+                <a href="#living" className="text-gray-400 hover:text-yk-primary-400 transition-colors text-sm">
+                  Living Here
+                </a>
+              </li>
+              <li>
+                <a href="#moving" className="text-gray-400 hover:text-yk-primary-400 transition-colors text-sm">
+                  Moving Here
+                </a>
+              </li>
+              <li>
+                <a href="#visiting" className="text-gray-400 hover:text-yk-primary-400 transition-colors text-sm">
+                  Visiting
+                </a>
+              </li>
             </ul>
           </div>
 
-          {/* Company Links */}
+          {/* Connect */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-              Company
-            </h3>
-            <ul className="space-y-3">
-              {footerLinks.company.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Legal Links */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-              Legal
-            </h3>
-            <ul className="space-y-3">
-              {footerLinks.legal.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Bottom Section */}
-        <div className="pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          {/* Copyright */}
-          <p className="text-sm text-gray-600">
-            © {currentYear} YK Bike Finder. All rights reserved.
-          </p>
-
-          {/* Social Links */}
-          <div className="flex items-center space-x-4">
-            {socialLinks.map((social) => (
+            <h4 className="text-lg font-semibold mb-4">Connect</h4>
+            <div className="flex space-x-4">
               <a
-                key={social.name}
-                href={social.href}
-                className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200"
-                aria-label={social.name}
+                href="#"
+                className="w-10 h-10 bg-yk-dark-700 hover:bg-yk-dark-600 rounded-lg flex items-center justify-center transition-all hover:scale-110"
+                aria-label="GitHub"
               >
-                <social.icon className="h-5 w-5" />
+                <Github className="w-5 h-5" />
               </a>
-            ))}
+              <a
+                href="#"
+                className="w-10 h-10 bg-yk-dark-700 hover:bg-yk-dark-600 rounded-lg flex items-center justify-center transition-all hover:scale-110"
+                aria-label="Email"
+              >
+                <Mail className="w-5 h-5" />
+              </a>
+            </div>
           </div>
         </div>
+
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-yk-dark-700 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <p className="text-gray-400 text-sm">
+            © {currentYear} YK-Companion. All rights reserved.
+          </p>
+          <p className="text-gray-400 text-sm flex items-center">
+            Made with <Heart className="w-4 h-4 text-red-500 mx-1 animate-pulse" /> in Yellowknife
+          </p>
         </div>
       </div>
     </footer>
